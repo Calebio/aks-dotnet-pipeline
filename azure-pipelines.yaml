@@ -1,0 +1,77 @@
+trigger:
+  branches:
+    include:
+      - main
+
+variables:
+  imageName: 'weatherapi'
+  tag: '$(Build.BuildId)'
+  dockerRegistryServiceConnection: 'acr-connection'
+  acrLoginServer: 'calebaksacr.azurecr.io'
+  k8sServiceConnection: 'aks-connection'
+
+stages:
+- stage: Build
+  displayName: Build, Test & Push
+  jobs:
+  - job: BuildTestPush
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        version: '8.0.x'
+
+    - script: dotnet restore
+      displayName: 'Restore'
+
+    - script: dotnet build --configuration Release --no-restore
+      displayName: 'Build'
+
+    - script: dotnet test --configuration Release --no-build --logger trx
+      displayName: 'Test'
+
+    - task: PublishTestResults@2
+      condition: succeededOrFailed()
+      inputs:
+        testResultsFormat: 'VSTest'
+        testResultsFiles: '**/*.trx'
+
+    - task: Docker@2
+      displayName: 'Build & Push image'
+      inputs:
+        containerRegistry: '$(dockerRegistryServiceConnection)'
+        repository: '$(imageName)'
+        command: 'buildAndPush'
+        Dockerfile: 'Dockerfile'
+        tags: |
+          $(tag)
+          latest
+
+- stage: Deploy
+  displayName: Deploy to AKS
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: DeployToAKS
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'aks-prod'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - script: |
+              sed -i "s|__ACR_LOGIN_SERVER__|$(acrLoginServer)|g" k8s/deployment.yaml
+              sed -i "s|__IMAGE_TAG__|$(tag)|g" k8s/deployment.yaml
+            displayName: 'Substitute image placeholders'
+          - task: KubernetesManifest@1
+            displayName: 'Deploy manifests'
+            inputs:
+              action: 'deploy'
+              connectionType: 'kubernetesServiceConnection'
+              kubernetesServiceConnection: '$(k8sServiceConnection)'
+              manifests: |
+                k8s/deployment.yaml
+                k8s/service.yaml
