@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="../../../../../../source/repos/aks-dotnet-pipeline/src/WeatherApi/WeatherApi.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="../../../../../../source/repos/aks-dotnet-pipeline/tests/WeatherApi.Tests/WeatherApi.Tests.csproj" />
+  </Folder>
+</Solution>

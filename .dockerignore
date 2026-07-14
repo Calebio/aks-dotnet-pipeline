@@ -1,0 +1,10 @@
+**/.vs
+.vs/
+**/bin
+**/obj
+.git/
+**/node_modules
+Dockerfile
+README.md
+terraform/
+k8s/
