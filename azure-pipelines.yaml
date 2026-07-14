@@ -20,15 +20,15 @@ stages:
     steps:
     - task: UseDotNet@2
       inputs:
-        version: '8.0.x'
+        version: '10.0.x'
 
-    - script: dotnet restore
+    - script: dotnet restore AksDotnetPipeline.slnx
       displayName: 'Restore'
 
-    - script: dotnet build --configuration Release --no-restore
+    - script: dotnet build AksDotnetPipeline.slnx --configuration Release --no-restore
       displayName: 'Build'
 
-    - script: dotnet test --configuration Release --no-build --logger trx
+    - script: dotnet test AksDotnetPipeline.slnx --configuration Release --no-build --logger trx
       displayName: 'Test'
 
     - task: PublishTestResults@2
