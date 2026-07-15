@@ -16,7 +16,7 @@ stages:
   jobs:
   - job: BuildTestPush
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-22.04'
     steps:
     - task: UseDotNet@2
       displayName: 'Install .NET 10 SDK'
