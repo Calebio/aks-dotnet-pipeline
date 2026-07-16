@@ -92,7 +92,7 @@ kubectl get nodes                  # should show an aks-... node, STATUS Ready
 
 ```bash
 cd ..                              # back to repo root (where the Dockerfile is)
-az acr build --registry calebaksacr --image weatherapi:v1 .
+az acr build --registry calebaksacr --image weatherapi:v1 . --resource-group calebaks-rg
 ```
 
 This uploads the build context and compiles the multi-stage Dockerfile **inside Azure
