@@ -23,12 +23,6 @@ stages:
       inputs:
         version: '10.0.x'
 
-    - task: UseDotNet@2
-      displayName: 'Install .NET 8 runtime'
-      inputs:
-        packageType: 'aspnetcore-runtime'
-        version: '8.0.x'
-
     - script: dotnet restore AksDotnetPipeline.slnx
       displayName: 'Restore'
 
@@ -37,6 +31,8 @@ stages:
 
     - script: dotnet test AksDotnetPipeline.slnx --configuration Release --no-build --logger trx
       displayName: 'Test'
+      env:
+        DOTNET_ROLL_FORWARD: Major
 
     - task: PublishTestResults@2
       condition: succeededOrFailed()
