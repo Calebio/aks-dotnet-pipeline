@@ -70,8 +70,12 @@ stages:
           steps:
           - checkout: self
           - script: |
-              sed -i "s|__ACR_LOGIN_SERVER__|$(acrLoginServer)|g" k8s/deployment.yaml
-              sed -i "s|__IMAGE_TAG__|$(tag)|g" k8s/deployment.yaml
+              pwd
+              ls -la
+              echo "--- SourcesDirectory: $(Build.SourcesDirectory)"
+              ls -la $(Build.SourcesDirectory)
+              sed -i "s|__ACR_LOGIN_SERVER__|$(acrLoginServer)|g" $(Build.SourcesDirectory)/k8s/deployment.yaml
+              sed -i "s|__IMAGE_TAG__|$(tag)|g" $(Build.SourcesDirectory)/k8s/deployment.yaml
             displayName: 'Substitute image placeholders'
             workingDirectory: '$(Build.SourcesDirectory)'
           - task: KubernetesManifest@1
