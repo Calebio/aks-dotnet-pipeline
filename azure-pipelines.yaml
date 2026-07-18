@@ -73,6 +73,7 @@ stages:
               sed -i "s|__ACR_LOGIN_SERVER__|$(acrLoginServer)|g" k8s/deployment.yaml
               sed -i "s|__IMAGE_TAG__|$(tag)|g" k8s/deployment.yaml
             displayName: 'Substitute image placeholders'
+            workingDirectory: '$(Build.SourcesDirectory)'
           - task: KubernetesManifest@1
             displayName: 'Deploy manifests'
             inputs:
@@ -80,5 +81,5 @@ stages:
               connectionType: 'kubernetesServiceConnection'
               kubernetesServiceConnection: '$(k8sServiceConnection)'
               manifests: |
-                k8s/deployment.yaml
-                k8s/service.yaml
+                $(Build.SourcesDirectory)/k8s/deployment.yaml
+                $(Build.SourcesDirectory)/k8s/service.yaml
