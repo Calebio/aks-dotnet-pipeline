@@ -23,6 +23,12 @@ stages:
       inputs:
         version: '10.0.x'
 
+    - script: |
+        curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
+        chmod +x dotnet-install.sh
+        ./dotnet-install.sh --channel 8.0 --runtime aspnetcore --install-dir /usr/share/dotnet
+      displayName: 'Install ASP.NET Core 8 runtime'
+
     - script: dotnet restore AksDotnetPipeline.slnx
       displayName: 'Restore'
 
@@ -31,8 +37,6 @@ stages:
 
     - script: dotnet test AksDotnetPipeline.slnx --configuration Release --no-build --logger trx
       displayName: 'Test'
-      env:
-        DOTNET_ROLL_FORWARD: Major
 
     - task: PublishTestResults@2
       condition: succeededOrFailed()
