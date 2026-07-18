@@ -132,14 +132,42 @@
   kubectl get pods                              # 2 pods, READY 1/1, Running
   kubectl describe pod <pod-name> | grep Image: # tag = BUILD NUMBER, not v1
   ```
-- [ ] **Reach the app** (no public IP, no cost)
+- [ ] **Reach the app — option A: port-forward** (no public IP, no cost — use during development)
   ```bash
   kubectl port-forward svc/weatherapi-svc 8080:80
   ```
   Check: `/swagger`, `/api/weather`, `/healthz`, `/readyz`
 
+- [ ] **Reach the app — option B: public LoadBalancer IP** (the better demo — proves the full
+  internet → Azure Load Balancer → Service → pod chain)
+  ```bash
+  kubectl get svc weatherapi-svc          # EXTERNAL-IP populates in ~1-2 min
+  ```
+  - EXTERNAL-IP = ______________________  ← **write it down / bookmark it**
+  - Open `http://<EXTERNAL-IP>/swagger` — the Service listens on port 80, so no port needed
+  - Costs ~$0.025/hr for the public IP + Standard Load Balancer. Fine overnight; destroy after.
+  - The IP **changes on every rebuild** — always re-capture it.
+
 - [ ] **THE MONEY DEMO** — change one string in `WeatherController.cs`, commit, push, and watch the
   full pipeline run and redeploy. New pods, new tag. This is the thing to show live.
+
+### Demo prep (do this the night before, while everything works)
+
+- [ ] Screenshot the **green pipeline run** — both stages, and the Test step showing `Passed: 2`
+- [ ] Screenshot `kubectl get pods` — 2 pods Running
+- [ ] Screenshot the **Swagger UI** at the public IP
+- [ ] Bookmark: the GitHub repo, the Azure DevOps run, `http://<EXTERNAL-IP>/swagger`
+- [ ] On the day, ~1 hour before the call:
+  ```bash
+  az account show --output table    # still the right subscription?
+  kubectl get pods                  # still connected? if not: az aks get-credentials ... --overwrite-existing
+  curl http://<EXTERNAL-IP>/healthz # app still serving?
+  ```
+
+> **What to show, in priority order:** (1) the GitHub repo — README and pipeline YAML, the strongest
+> and most permanent artifact; (2) the green pipeline run; (3) the live app at the public IP.
+> Screenshots cover you if the network misbehaves — for a 45-minute call they're often better than
+> fumbling with a terminal.
 
 ---
 
