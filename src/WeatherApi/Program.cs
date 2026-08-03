@@ -7,7 +7,7 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
-// Swagger enabled in all environments for the interview demo.
+// Swagger enabled in all environments.
 app.UseSwagger();
 app.UseSwaggerUI();
 

@@ -25,11 +25,11 @@ resource "azurerm_container_registry" "acr" {
   admin_enabled       = true
 }
 # ...
-  # Admin user enabled only so the Azure DevOps service connection can authenticate
-  # for CI pushes — this personal DevOps org can't federate a service principal into
-  # the subscription. Cluster PULLS still use the kubelet managed identity + AcrPull
-  # role below (no credentials in the cluster). In an org setup this would be
-  # workload identity federation and admin would stay disabled.
+# Admin user enabled only so the Azure DevOps service connection can authenticate
+# for CI pushes this personal DevOps org can't federate a service principal into
+# the subscription. Cluster PULLS still use the kubelet managed identity + AcrPull
+# role below (no credentials in the cluster). In an org setup this would be
+# workload identity federation and admin would stay disabled.
 
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = "${var.prefix}-aks"
@@ -48,7 +48,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 }
 
-# Grant the AKS kubelet identity pull access to ACR — no admin creds, no pull secrets
+# Grant the AKS kubelet identity pull access to ACR no admin creds, no pull secrets
 resource "azurerm_role_assignment" "aks_acr_pull" {
   scope                            = azurerm_container_registry.acr.id
   role_definition_name             = "AcrPull"
